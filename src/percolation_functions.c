@@ -7,7 +7,7 @@
 #include "percolation_functions.h"
 #include "basic_functions.h"
 
-int simple_bfs (int C, int N, int **bond, int source, int target, int *vec, int *tmp_vec, int *visited, int *reset, int **dag, int *nr_sp) {
+int simple_bfs(int C, int N, int **bond, int source, int target, int *vec, int *tmp_vec, int *visited, int *reset, int **dag, int *nr_sp) {
     
     /*
      * This function implements the BFS algorithm especially designed for the 
@@ -73,7 +73,7 @@ int simple_bfs (int C, int N, int **bond, int source, int target, int *vec, int 
 
 
 
-int find_all_possible_pairs (int C, int N, int **bond, unsigned long **pairs) {
+int find_all_possible_pairs(int C, int N, int **bond, unsigned long **pairs) {
 
     /*
      * We use the breadth-first search (BFS) to find all the possible pairs between 
@@ -158,7 +158,7 @@ int find_all_possible_pairs (int C, int N, int **bond, unsigned long **pairs) {
     return num_pairs;
 }
 
-void remove_pair_wo_pair_info (int C, int N, int **bond, int **edges, int E, unsigned long long *update_time) {
+void remove_pair_wo_pair_info(int C, int N, int **bond, int **edges, int E, unsigned long long *update_time) {
 
     /*
      * 1. We randomly choose two nodes from the network and 
@@ -267,7 +267,7 @@ void remove_pair_wo_pair_info (int C, int N, int **bond, int **edges, int E, uns
     free(nr_sp);
 }
 
-void remove_pair_wo_pair_info_v2 (int C, int N, int **bond, int **edges, int E, unsigned long long *update_time, int threshold) {
+void remove_pair_wo_pair_info_v2(int C, int N, int **bond, int **edges, int E, unsigned long long *update_time, int threshold) {
 
     /*
      * 1. We randomly choose two nodes from the network and 
@@ -372,7 +372,7 @@ void remove_pair_wo_pair_info_v2 (int C, int N, int **bond, int **edges, int E, 
     free(nr_sp);
 }
 
-void remove_pair_w_pair_info (int C, int N, int **bond, unsigned long **pairs, int **edges) {
+void remove_pair_w_pair_info(int C, int N, int **bond, unsigned long **pairs, int **edges) {
     
     /*
      * This is the modified version of the function `remove_pair_wo_pair_info`.
@@ -464,7 +464,7 @@ void remove_pair_w_pair_info (int C, int N, int **bond, unsigned long **pairs, i
     free(nr_sp);
 }
 
-void remove_pair_w_pair_info_v2 (int C, int N, int **bond, unsigned long **pairs, int **edges, unsigned long long *update_time) {
+void remove_pair_w_pair_info_v2(int C, int N, int **bond, unsigned long **pairs, int **edges, unsigned long long *update_time) {
     
     /*
      * This is the modified version of the function `remove_pair_w_pair_info`.
@@ -602,12 +602,12 @@ void remove_pair_w_pair_info_v2 (int C, int N, int **bond, unsigned long **pairs
     free(nr_sp);
 }
 
-int get_path_of_pair (int source, int target, int C, int N, int **bond, int *path, int *vec, int *tmp_vec, int *visited, int *reset, int **dag, int *nr_sp) {
+int get_path_of_pair(int source, int target, int C, int N, int **bond, int *path, int *vec, int *tmp_vec, int *visited, int *reset, int **dag, int *nr_sp) {
     int i, n, control;
 
-    control = simple_bfs (C, N, bond, source, target, vec, tmp_vec, visited, reset, dag, nr_sp);
+    control = simple_bfs(C, N, bond, source, target, vec, tmp_vec, visited, reset, dag, nr_sp);
     path[0] = 0;
-    if (control == 2) {sample_random_path (C, N, dag, source, target, path, nr_sp);}
+    if (control == 2) {sample_random_path(C, N, dag, source, target, path, nr_sp);}
 
     /* reset some values */
     for (i = 1; i <= reset[0]; i++) {
@@ -620,7 +620,7 @@ int get_path_of_pair (int source, int target, int C, int N, int **bond, int *pat
     return path[0];
 }
 
-void sample_random_path (int C, int N, int **dag, int source, int target, int *path, int *nr_sp) {
+void sample_random_path(int C, int N, int **dag, int source, int target, int *path, int *nr_sp) {
     
     int i, n, found, control;
     unsigned long q, T;
@@ -665,7 +665,7 @@ void sample_random_path (int C, int N, int **dag, int source, int target, int *p
     return;
 }
 
-void randomize_vector (unsigned long *vector, unsigned long size) { // suspected bottleneck
+void randomize_vector(unsigned long *vector, unsigned long size) { // suspected bottleneck
     
     unsigned long i, q, k, tmp;
     
@@ -822,106 +822,6 @@ void modified_NZ_algorithm (int N, int **edges, double **largest_cluster) {
     free(res);
 }
 
-void new_modified_NZ_algorithm (int N, int **edges, double **largest_cluster) {
-
-    // printf("starting NZ alogirhm\n");
-
-    int **root;
-    int *res;
-    int i, j, n, m, e, rn, rm, sn, sm, gcc, count, control, larg;
-    double av, av2, tmp;
-    
-    av2 = N - 1;
-
-    /* allocate memory */
-    root = (int **)malloc(sizeof(int *) * 2);
-    root[0] = (int *)malloc(sizeof(int) * (N + 1));
-    root[1] = (int *)malloc(sizeof(int) * (N + 1));
-    res = (int *)malloc(sizeof(int) * 2); /* helper array to save root node & cluster size info */
-
-    for (i = 1; i <= N; i++) {
-        root[0][i] = i; /* root node id */
-        root[1][i] = 1; /* size of the cluster which shares the same root node */
-    }
-
-    larg = 1;
-    /* it seems there is an indexing issue when applying NZ algorithm */
-    for (e = edges[0][0]; e >= 1; e--) { 
-        /* choose two nodes at the end of an edge */
-        n = edges[0][e]; 
-        m = edges[1][e];
-
-        /* find the root node and the size of the clusters with the same root node */
-        tree_find_root(n, root, res);
-        rn = res[0]; 
-        sn = res[1];
-        tree_find_root(m, root, res); 
-        rm = res[0];
-        sm = res[1];
-
-        // printf("rn = %d, rm = %d\n", rn, rm);
-
-        /* 
-         * Merge two clusters related to node n, and node m
-         * only if the tow nodes do not share the same root node.
-         * if two nodes belong to the same cluster: no update!
-         */
-        
-        
-        if (rn != rm) { 
-        
-            /* keep nz array clean*/
-            if (sn > sm) {
-                root[0][rm] = rn;
-                root[1][rm] = 1; /* Is this proper? YES*/ 
-                root[1][rn] = sn + sm;
-            } else {
-                root[0][rn] = rm;
-                root[1][rn] = 1; 
-                root[1][rm] = sn + sm;
-            }
-
-            
-            if (sn + sm > larg) {
-                /* if a new gcc emerges*/
-                av2 -= (double) (sn) * (double) (sn);
-                av2 -= (double) (sm) * (double) (sm);
-                av2 += (double) (larg) * (double) (larg);
-
-                // av -= (double) (sn + sm);
-                // av += (double) larg;
-
-                larg = (double) (sn) + (double) (sm);
-                // printf("gcc updated to size : %f\n", (double) larg / (double) N);
-
-            } else { 
-                /* if there is no change in the gcc*/
-                av2 -= (double) (sn) * (double) (sn);
-                av2 -= (double) (sm) * (double) (sm);
-                av2 += (double) ((sn + sm)) * (double) ((sn + sm));
-            }
-        }
-
-        tmp = (double)larg / (double) N;
-        
-        largest_cluster[1][e] = tmp; /* 1st moment */
-        largest_cluster[2][e] = tmp * tmp; /* 2nd moment */
-        largest_cluster[3][e] = tmp * tmp * tmp; /* 3rd moment*/
-        largest_cluster[4][e] = tmp * tmp * tmp * tmp; /* 4th moment */
-
-        av = (double) (N) - (double) (larg); /* number of nodes belonging to finite clusters */
-        
-        // if (rm != rn) {av2 += (double) ((sn + sm) * (sn + sm));}
-        // av2 -= (double) (larg * larg);
-        if (av > 0) {largest_cluster[5][e] = av2 / av;} /* average cluster size */
-    }
-
-    free(root[0]);
-    free(root[1]);
-    free(root);
-    free(res);
-}
-
 void efficient_pair_removal(int C, int N, int **bond, int **edges, int E, unsigned long long *update_time, int threshold) {
 
     unsigned long **pairs;
@@ -937,122 +837,6 @@ void efficient_pair_removal(int C, int N, int **bond, int **edges, int E, unsign
     num_pairs = find_all_possible_pairs (C, N, bond, pairs);
     remove_pair_w_pair_info_v2 (C, N, bond, pairs, edges, update_time);
 
-    free(pairs[0]); 
-    free(pairs[1]); 
-    free(pairs);
-}
-
-void efficient_pair_removal_v2(int C, int N, int **bond, int **edges, int E, unsigned long long *update_time, int threshold) {
-    /* Same as efficient_pair_removal() but save logs for time / spatial complexity.
-    *  Use this function to check spatial complexity for C = 1, 2, 3, and -1 (N)
-    */
-    clock_t start, end;
-    double cpu_time_used1, cpu_time_used2, cpu_time_used3;
-    char complexity_fname[200];
-    FILE *f;
-
-    unsigned long **pairs;
-    unsigned long num_pairs;
-    
-    int idx;
-    double p;
-
-    /* phase 1 */
-    start = clock();
-
-    remove_pair_wo_pair_info_v2 (C, N, bond, edges, E, update_time, threshold);
-
-    end = clock();
-    cpu_time_used1 = ((double) (end - start)) / CLOCKS_PER_SEC;
-
-    idx = edges[0][0];
-    p = (double) idx / (double) (N * 2);
-
-    /* phase 2 - (a)*/
-    start = clock();
-
-    pairs = (unsigned long **)malloc(sizeof(unsigned long *) * 2);
-    pairs[0] = (unsigned long *)malloc(sizeof(unsigned long) * 1);
-    pairs[1] = (unsigned long *)malloc(sizeof(unsigned long) * 1);
-    num_pairs = find_all_possible_pairs (C, N, bond, pairs);
-    
-    end = clock();
-    cpu_time_used2 = ((double) (end - start)) / CLOCKS_PER_SEC;
-    
-    /* phase 2 - (b)*/
-    start = clock();
-    
-    remove_pair_w_pair_info_v2 (C, N, bond, pairs, edges, update_time);
-
-    end = clock();
-    cpu_time_used3 = ((double) (end - start)) / CLOCKS_PER_SEC;
-
-    sprintf(complexity_fname, "./data/processed/ERN/new_computational_complexity.csv");
-    f = fopen(complexity_fname, "a");
-    if (C == -1) {
-        fprintf(f, "%d, %d, %g, %g, %g, %lu, %g\n", N, N, cpu_time_used1, cpu_time_used2, cpu_time_used3, num_pairs, p);
-    } else {
-        fprintf(f, "%d, %d, %g, %g, %g, %lu, %g\n", N, C, cpu_time_used1, cpu_time_used2, cpu_time_used3, num_pairs, p);
-    }
-    
-    fclose(f);
-    free(pairs[0]); 
-    free(pairs[1]); 
-    free(pairs);
-}
-
-void efficient_pair_removal_v3(int C, int N, int **bond, int **edges, int E, unsigned long long *update_time, int threshold, char *cost_name) {
-    
-    /* Same as efficient_pair_removal() but save logs for time / spatial complexity.
-    *  Use this function to check spatial complexity for C = logN, N^\theta, etc
-    *  To do so, we pass an additonal argument `cost_name`
-    */
-    clock_t start, end;
-    double cpu_time_used1, cpu_time_used2, cpu_time_used3;
-    char complexity_fname[200];
-    FILE *f;
-
-    unsigned long **pairs;
-    unsigned long num_pairs;
-
-    int idx;
-    double p;
-
-    /* phase 1 */
-    start = clock();
-
-    remove_pair_wo_pair_info_v2 (C, N, bond, edges, E, update_time, threshold);
-
-    end = clock();
-    cpu_time_used1 = ((double) (end - start)) / CLOCKS_PER_SEC;
-
-    idx = edges[0][0];
-    p = (double) idx / (double) (N * 2);
-
-    /* phase 2 - (a)*/
-    start = clock();
-
-    pairs = (unsigned long **)malloc(sizeof(unsigned long *) * 2);
-    pairs[0] = (unsigned long *)malloc(sizeof(unsigned long) * 1);
-    pairs[1] = (unsigned long *)malloc(sizeof(unsigned long) * 1);
-    num_pairs = find_all_possible_pairs (C, N, bond, pairs);
-    
-    end = clock();
-    cpu_time_used2 = ((double) (end - start)) / CLOCKS_PER_SEC;
-    
-    /* phase 2 - (b)*/
-    start = clock();
-    
-    remove_pair_w_pair_info_v2 (C, N, bond, pairs, edges, update_time);
-
-    end = clock();
-    cpu_time_used3 = ((double) (end - start)) / CLOCKS_PER_SEC;
-
-    sprintf(complexity_fname, "./data/processed/ERN/new_computational_complexity.csv");
-    f = fopen(complexity_fname, "a");
-    fprintf(f, "%d, %s, %g, %g, %g, %lu %g\n", N, cost_name, cpu_time_used1, cpu_time_used2, cpu_time_used3, num_pairs, p);
-    fclose(f);
-    
     free(pairs[0]); 
     free(pairs[1]); 
     free(pairs);

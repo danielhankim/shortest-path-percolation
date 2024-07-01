@@ -70,12 +70,6 @@ void copy_network (int N, int **origin_bond, int **copy_bond) {
 			copy_bond[i][j] = origin_bond[i][j]; // adj nodes
 		}
 	}
-    /* check validity*/
-    // for (i = 1; i <= N; i++) {
-    //     for (j = 1; j <= copy_bond[0][i]; j++) {
-    //         printf("copy_bond[%d][%d] = %d\n", i, j, copy_bond[i][j]);
-    //     }
-    // }
 }
 
 void copy_list_of_pair (unsigned long num_pairs, unsigned long **origin_pairs, unsigned long **copy_pairs) {
@@ -87,19 +81,6 @@ void copy_list_of_pair (unsigned long num_pairs, unsigned long **origin_pairs, u
         copy_pairs[1][i] = origin_pairs[1][i];
     }
     copy_pairs[0][0] = num_pairs;
-
-
-    // chunk to check whether the copy is successful
-    // for (i = 1; i <= num_pairs; i++) {
-    //     if (copy_pairs[0][i] != origin_pairs[0][i]) {
-    //         printf("copy is not done properly!\n");
-    //         break;
-    //     }
-    //     if (copy_pairs[1][i] != origin_pairs[1][i]) {
-    //         printf("copy is not done properly!\n");
-    //         break;
-    //     }
-    // }
 }
 
 unsigned long long geometric_distribution(double P) {
@@ -133,7 +114,6 @@ int warning_message(int find_pairs, int C) {
 
 void clean_time_stamp(unsigned long long *time_stamp, int E) {
     int i;
-
     for (i = 1; i <= E; i++) {
         time_stamp[i] = 0;
     }
