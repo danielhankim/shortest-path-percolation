@@ -1,5 +1,5 @@
 CC=gcc
-OT=-ffast-math -g
+OT=-ffast-math
 OP=$(OT)
 LOP=-lm -o
 
